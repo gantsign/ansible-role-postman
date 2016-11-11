@@ -2,6 +2,7 @@ Ansible Role: Postman
 =====================
 
 [![Build Status](https://travis-ci.org/gantsign/ansible-role-postman.svg?branch=master)](https://travis-ci.org/gantsign/ansible-role-postman)
+[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-gantsign.postman-blue.svg)](https://galaxy.ansible.com/gantsign/postman)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/gantsign/ansible-role-postman/master/LICENSE)
 
 Role to download and install the [Postman](https://www.getpostman.com) HTTP
