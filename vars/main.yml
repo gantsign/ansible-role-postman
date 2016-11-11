@@ -1,2 +1,3 @@
 ---
-# vars file for ansible-role-postman
+# Filename of Go language SDK redistributable package
+postman_redis_filename: 'Postman-linux-x64-latest.tar.gz'

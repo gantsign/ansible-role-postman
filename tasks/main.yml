@@ -1,2 +1,112 @@
 ---
-# tasks file for ansible-role-postman
+- name: create download directory
+  file:
+    state: directory
+    mode: 'u=rwx,go=rx'
+    dest: '{{ postman_download_dir }}'
+
+- name: ensure ca-certificates installed (apt)
+  become: yes
+  apt:
+    name: ca-certificates
+    state: present
+  when: ansible_pkg_mgr == 'apt'
+
+- name: ensure curl installed (apt)
+  become: yes
+  apt:
+    name: curl
+    state: present
+  when: ansible_pkg_mgr == 'apt'
+
+- name: check latest remote Postman version
+  tags:
+    # False positive: [ANSIBLE0014] Environment variables don't work as part of command
+    # Setting the environment variables in the script so they are safe to use.
+    - skip_ansible_lint
+  shell: |
+    head_file={{ postman_download_dir }}/{{ postman_redis_filename }}.head
+    curl --head {{ postman_redis_url }} > $head_file
+  changed_when: no
+
+- name: compare local version
+  tags:
+    # False positive: [ANSIBLE0014] Environment variables don't work as part of command
+    # Setting the environment variables in the script so they are safe to use.
+    - skip_ansible_lint
+  shell: |
+    head_file={{ postman_download_dir }}/{{ postman_redis_filename }}.head
+    version_file={{ postman_download_dir }}/{{ postman_redis_filename }}.version
+    [ "$(grep -i -E --color=never '^Content-Disposition:' $head_file)" = "$(cat $version_file)" ]
+  args:
+    executable: /bin/bash
+  register: version_check
+  changed_when: no
+  failed_when: no
+
+- name: download Postman
+  get_url:
+    url: '{{ postman_redis_url }}'
+    dest: '{{ postman_download_dir }}/{{ postman_redis_filename }}'
+    force: '{{ version_check.rc != 0 }}'
+    use_proxy: yes
+    validate_certs: yes
+    mode: 'u=rw,go=r'
+
+- name: update version file
+  tags:
+    # False positive: [ANSIBLE0014] Environment variables don't work as part of command
+    # Setting the environment variables in the script so they are safe to use.
+    - skip_ansible_lint
+  shell: |
+    head_file={{ postman_download_dir }}/{{ postman_redis_filename }}.head
+    version_file={{ postman_download_dir }}/{{ postman_redis_filename }}.version
+    grep -i -E --color=never '^Content-Disposition:' $head_file > $version_file
+  args:
+    executable: /bin/bash
+  when: '{{ version_check.rc != 0 }}'
+
+- name: create Postman installation directory
+  become: yes
+  file:
+    state: directory
+    owner: root
+    group: root
+    mode: 'u=rwx,go=rx'
+    dest: '{{ postman_install_dir }}'
+
+- name: install Postman
+  become: yes
+  tags:
+    # Suppress: [ANSIBLE0006] tar used in place of unarchive module
+    # The unarchive module didn't support `--strip-components` before
+    # `extra_opts` was added in 2.1 and we're supporting >= 2.0.
+    - skip_ansible_lint
+  command: >
+    /bin/tar --extract --gunzip --strip-components=1
+    --file '{{ postman_download_dir }}/{{ postman_redis_filename }}'
+    --directory '{{ postman_install_dir }}'
+  args:
+    creates: '{{ postman_install_dir }}/Postman'
+    # Suppress: [WARNING]: Consider using unarchive module rather than running tar
+    warn: no
+
+- name: install Postman link
+  become: yes
+  file:
+    state: link
+    force: yes
+    src: '{{ postman_install_dir }}/Postman'
+    dest: '/usr/local/bin/Postman'
+    owner: root
+    group: root
+    mode: 'u=rwx,go=rx'
+
+- name: install Postman desktop file
+  become: yes
+  template:
+    src: Postman.desktop.j2
+    dest: '/usr/share/applications/Postman.desktop'
+    owner: root
+    group: root
+    mode: 'u=rw,go=r'
