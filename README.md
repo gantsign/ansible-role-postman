@@ -11,7 +11,11 @@ tool.
 Requirements
 ------------
 
-* Ansible >= 2.0
+* Ansible
+
+    * Minimum 2.0
+    * Maximum 2.3 (currently using `always_run`, which is scheduled for removal
+      in 2.4)
 
 * Linux Distribution
 
