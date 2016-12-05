@@ -21,23 +21,15 @@
 
 - name: check latest remote Postman version
   tags:
-    # False positive: [ANSIBLE0014] Environment variables don't work as part of command
-    # Setting the environment variables in the script so they are safe to use.
+    # Suppress: [ANSIBLE0006] curl used in place of get_url or uri module
     - skip_ansible_lint
   shell: |
-    head_file={{ postman_download_dir }}/{{ postman_redis_filename }}.head
-    curl --head {{ postman_redis_url }} > $head_file
+    curl --head {{ postman_redis_url }} > {{ postman_head_path }}
   changed_when: no
 
 - name: compare local version
-  tags:
-    # False positive: [ANSIBLE0014] Environment variables don't work as part of command
-    # Setting the environment variables in the script so they are safe to use.
-    - skip_ansible_lint
   shell: |
-    head_file={{ postman_download_dir }}/{{ postman_redis_filename }}.head
-    version_file={{ postman_download_dir }}/{{ postman_redis_filename }}.version
-    [ "$(grep -i -E --color=never '^Content-Disposition:' $head_file)" = "$(cat $version_file)" ]
+    [ "$(grep -i -E --color=never '^Content-Disposition:' {{ postman_head_path }})" = "$(cat {{ postman_version_path }})" ]
   args:
     executable: /bin/bash
   register: version_check
@@ -54,14 +46,8 @@
     mode: 'u=rw,go=r'
 
 - name: update version file
-  tags:
-    # False positive: [ANSIBLE0014] Environment variables don't work as part of command
-    # Setting the environment variables in the script so they are safe to use.
-    - skip_ansible_lint
   shell: |
-    head_file={{ postman_download_dir }}/{{ postman_redis_filename }}.head
-    version_file={{ postman_download_dir }}/{{ postman_redis_filename }}.version
-    grep -i -E --color=never '^Content-Disposition:' $head_file > $version_file
+    grep -i -E --color=never '^Content-Disposition:' {{ postman_head_path }} > {{ postman_version_path }}
   args:
     executable: /bin/bash
   when: '{{ version_check.rc != 0 }}'

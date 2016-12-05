@@ -1,3 +1,9 @@
 ---
 # Filename of Go language SDK redistributable package
 postman_redis_filename: 'Postman-linux-x64-latest.tar.gz'
+
+# Path to the file containing the HTTP headers for the existing version of Postman
+postman_head_path: '{{ postman_download_dir }}/{{ postman_redis_filename }}.head'
+
+# Path to the file containing the version of the existing version of Postman
+postman_version_path: '{{ postman_download_dir }}/{{ postman_redis_filename }}.version'
