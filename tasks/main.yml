@@ -12,45 +12,46 @@
     state: present
   when: ansible_pkg_mgr == 'apt'
 
-- name: ensure curl installed (apt)
-  become: yes
-  apt:
-    name: curl
-    state: present
-  when: ansible_pkg_mgr == 'apt'
+- name: check for version file
+  stat:
+    path: '{{ postman_version_path }}'
+  register: version_file_test
+
+- name: read version file
+  slurp:
+    src: '{{ postman_version_path }}'
+  register: version_file
+  when: version_file_test.stat.exists
+
+- name: set existing version fact
+  set_fact:
+    postman_existing_version: '{{ version_file.content | b64decode }}'
+  when: version_file_test.stat.exists
 
 - name: check latest remote Postman version
-  tags:
-    # Suppress: [ANSIBLE0006] curl used in place of get_url or uri module
-    - skip_ansible_lint
-  shell: |
-    curl --head {{ postman_redis_url }} > {{ postman_head_path }}
-  changed_when: no
+  uri:
+    url: '{{ postman_redis_url }}'
+    method: HEAD
+    follow_redirects: safe
+  register: head_query
 
-- name: compare local version
-  shell: |
-    [ "$(grep -i -E --color=never '^Content-Disposition:' {{ postman_head_path }})" = "$(cat {{ postman_version_path }})" ]
-  args:
-    executable: /bin/bash
-  register: version_check
-  changed_when: no
-  failed_when: no
+- name: set latest version fact
+  set_fact:
+    postman_latest_version: '{{ head_query.content_disposition }}'
 
 - name: download Postman
   get_url:
     url: '{{ postman_redis_url }}'
     dest: '{{ postman_download_dir }}/{{ postman_redis_filename }}'
-    force: '{{ version_check.rc != 0 }}'
+    force: '{{ postman_latest_version != postman_existing_version }}'
     use_proxy: yes
     validate_certs: yes
     mode: 'u=rw,go=r'
 
 - name: update version file
-  shell: |
-    grep -i -E --color=never '^Content-Disposition:' {{ postman_head_path }} > {{ postman_version_path }}
-  args:
-    executable: /bin/bash
-  when: '{{ version_check.rc != 0 }}'
+  copy:
+    content: '{{ postman_latest_version }}'
+    dest: '{{ postman_version_path }}'
 
 - name: create Postman installation directory
   become: yes
