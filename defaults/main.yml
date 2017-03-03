@@ -1,6 +1,6 @@
 ---
 # URL to download the Postman redistributable package from
-postman_redis_url: 'https://dl.pstmn.io/download/latest/linux?arch=64'
+postman_redis_url: 'https://dl.pstmn.io/download/latest/linux64'
 
 # Base installation directory for the Postman distribution
 postman_install_dir: '/opt/Postman'
