@@ -1,4 +1,15 @@
 ---
+molecule:
+  test:
+    sequence:
+      - destroy
+      - syntax
+      - create
+      - converge
+      - idempotence
+      - check
+      - verify
+
 ansible:
   playbook: tests/test.yml
 
