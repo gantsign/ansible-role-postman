@@ -65,19 +65,13 @@
 
 - name: install Postman
   become: yes
-  tags:
-    # Suppress: [ANSIBLE0006] tar used in place of unarchive module
-    # The unarchive module didn't support `--strip-components` before
-    # `extra_opts` was added in 2.1 and we're supporting >= 2.0.
-    - skip_ansible_lint
-  command: >
-    /bin/tar --extract --gunzip --strip-components=1
-    --file '{{ postman_download_dir }}/{{ postman_redis_filename }}'
-    --directory '{{ postman_install_dir }}'
-  args:
+  unarchive:
+    src: '{{ postman_download_dir }}/{{ postman_redis_filename }}'
+    remote_src: yes
+    dest: '{{ postman_install_dir }}'
+    extra_opts:
+     - '--strip-components=1'
     creates: '{{ postman_install_dir }}/Postman'
-    # Suppress: [WARNING]: Consider using unarchive module rather than running tar
-    warn: no
 
 - name: install Postman link
   become: yes
