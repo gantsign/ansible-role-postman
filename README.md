@@ -13,7 +13,9 @@ Requirements
 
 * Ansible
 
-    * Minimum 2.0
+    * Minimum 2.2
+        * Use version 1.1.1 of this role if you need Ansible 2.0/2.1 support
+
     * Maximum 2.3 (currently using `always_run`, which is scheduled for removal
       in 2.4)
 
