@@ -12,21 +12,21 @@
     state: present
   when: ansible_pkg_mgr == 'apt'
 
-- name: check for version file
+- name: check for download version file
   stat:
-    path: '{{ postman_version_path }}'
-  register: version_file_test
+    path: '{{ postman_download_version_path }}'
+  register: download_version_file_test
 
-- name: read version file
+- name: read download version file
   slurp:
-    src: '{{ postman_version_path }}'
-  register: version_file
-  when: version_file_test.stat.exists
+    src: '{{ postman_download_version_path }}'
+  register: download_version_file
+  when: download_version_file_test.stat.exists
 
-- name: set existing version fact
+- name: set existing download version fact
   set_fact:
-    postman_existing_version: '{{ version_file.content | b64decode }}'
-  when: version_file_test.stat.exists
+    postman_existing_download_version: '{{ download_version_file.content | b64decode }}'
+  when: download_version_file_test.stat.exists
 
 - name: check latest remote Postman version
   uri:
@@ -44,15 +44,37 @@
   get_url:
     url: '{{ postman_redis_url }}'
     dest: '{{ postman_download_dir }}/{{ postman_redis_filename }}'
-    force: '{{ postman_latest_version != postman_existing_version }}'
+    force: '{{ postman_latest_version != postman_existing_download_version }}'
     use_proxy: yes
     validate_certs: yes
     mode: 'u=rw,go=r'
 
-- name: update version file
+- name: update download version file
   copy:
     content: '{{ postman_latest_version }}'
-    dest: '{{ postman_version_path }}'
+    dest: '{{ postman_download_version_path }}'
+
+- name: check for installed version file
+  stat:
+    path: '{{ postman_installed_version_path }}'
+  register: installed_version_file_test
+
+- name: read installed version file
+  slurp:
+    src: '{{ postman_installed_version_path }}'
+  register: installed_version_file
+  when: installed_version_file_test.stat.exists
+
+- name: set existing installed version fact
+  set_fact:
+    postman_existing_installed_version: '{{ installed_version_file.content | b64decode }}'
+  when: installed_version_file_test.stat.exists
+
+- name: remove previously insalled version
+  file:
+    state: absent
+    path: '{{ postman_install_dir }}'
+  when: (not installed_version_file_test.stat.exists) or postman_latest_version != postman_existing_installed_version
 
 - name: create Postman installation directory
   become: yes
@@ -72,6 +94,11 @@
     extra_opts:
       - '--strip-components=1'
     creates: '{{ postman_install_dir }}/Postman'
+
+- name: write installed version file
+  copy:
+    content: '{{ postman_latest_version }}'
+    dest: '{{ postman_installed_version_path }}'
 
 - name: install Postman link
   become: yes
