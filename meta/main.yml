@@ -5,9 +5,9 @@ galaxy_info:
   license: MIT
   min_ansible_version: 2.3
   platforms:
-  - name: Ubuntu
-    versions:
-    - xenial
+    - name: Ubuntu
+      versions:
+        - xenial
   galaxy_tags:
     - Postman
     - HTTP

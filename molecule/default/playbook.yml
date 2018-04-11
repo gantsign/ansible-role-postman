@@ -1,6 +1,5 @@
 ---
-- hosts: all
-  remote_user: root
-
+- name: Converge
+  hosts: all
   roles:
     - role: ansible-role-postman

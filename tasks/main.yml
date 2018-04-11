@@ -70,7 +70,7 @@
     remote_src: yes
     dest: '{{ postman_install_dir }}'
     extra_opts:
-     - '--strip-components=1'
+      - '--strip-components=1'
     creates: '{{ postman_install_dir }}/Postman'
 
 - name: install Postman link
