@@ -2,8 +2,14 @@
 # Filename of Go language SDK redistributable package
 postman_redis_filename: 'Postman-linux-x64-latest.tar.gz'
 
-# Path to the file containing the version of the existing version of Postman
-postman_version_path: '{{ postman_download_dir }}/{{ postman_redis_filename }}.version'
+# Path to the file containing the download version of the existing version of Postman
+postman_download_version_path: '{{ postman_download_dir }}/{{ postman_redis_filename }}.version'
 
-# Default value for existing version
-postman_existing_version: none
+# Path to the file containing the installed version of the existing version of Postman
+postman_installed_version_path: '{{ postman_install_dir }}/.version'
+
+# Default value for existing download version
+postman_existing_download_version: none
+
+# Default value for existing installed version
+postman_existing_installed_version: none
