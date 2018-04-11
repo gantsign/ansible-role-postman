@@ -13,8 +13,7 @@ Requirements
 
 * Ansible
 
-    * Minimum 2.2
-        * Use version 1.1.1 of this role if you need Ansible 2.0/2.1 support
+    * Minimum 2.3
 
 * Linux Distribution
 
