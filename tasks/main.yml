@@ -106,12 +106,8 @@
   become: yes
   file:
     state: link
-    force: yes
     src: '{{ postman_install_dir }}/Postman'
     dest: '/usr/local/bin/Postman'
-    owner: root
-    group: root
-    mode: 'u=rwx,go=rx'
 
 - name: install Postman desktop file
   become: yes
