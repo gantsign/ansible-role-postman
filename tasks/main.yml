@@ -93,6 +93,8 @@
     dest: '{{ postman_install_dir }}'
     extra_opts:
       - '--strip-components=1'
+    owner: root
+    group: root
     creates: '{{ postman_install_dir }}/Postman'
 
 - name: write installed version file
