@@ -48,11 +48,13 @@
     dest: '{{ postman_download_version_path }}'
 
 - name: check for installed version file
+  become: yes
   stat:
     path: '{{ postman_installed_version_path }}'
   register: installed_version_file_test
 
 - name: read installed version file
+  become: yes
   slurp:
     src: '{{ postman_installed_version_path }}'
   register: installed_version_file
@@ -64,6 +66,7 @@
   when: installed_version_file_test.stat.exists
 
 - name: remove previously insalled version
+  become: yes
   file:
     state: absent
     path: '{{ postman_install_dir }}'
@@ -91,6 +94,7 @@
     creates: '{{ postman_install_dir }}/Postman'
 
 - name: write installed version file
+  become: yes
   copy:
     content: '{{ postman_latest_version }}'
     dest: '{{ postman_installed_version_path }}'
