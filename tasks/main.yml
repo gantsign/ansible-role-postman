@@ -5,13 +5,6 @@
     mode: 'u=rwx,go=rx'
     dest: '{{ postman_download_dir }}'
 
-- name: ensure ca-certificates installed (apt)
-  become: yes
-  apt:
-    name: ca-certificates
-    state: present
-  when: ansible_pkg_mgr == 'apt'
-
 - name: check for download version file
   stat:
     path: '{{ postman_download_version_path }}'
