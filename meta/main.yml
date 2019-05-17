@@ -11,8 +11,8 @@ galaxy_info:
         - xenial
         - bionic
   galaxy_tags:
-    - Postman
-    - HTTP
-    - API
+    - postman
+    - http
+    - api
     - development
 dependencies: []
