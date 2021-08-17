@@ -1,7 +1,7 @@
 Ansible Role: Postman
 =====================
 
-[![Build Status](https://travis-ci.com/gantsign/ansible-role-postman.svg?branch=master)](https://travis-ci.com/gantsign/ansible-role-postman)
+[![Tests](https://github.com/gantsign/ansible-role-postman/workflows/Tests/badge.svg)](https://github.com/gantsign/ansible-role-postman/actions?query=workflow%3ATests)
 [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-gantsign.postman-blue.svg)](https://galaxy.ansible.com/gantsign/postman)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/gantsign/ansible-role-postman/master/LICENSE)
 
