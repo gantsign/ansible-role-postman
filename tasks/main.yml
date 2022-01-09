@@ -46,6 +46,7 @@
   copy:
     content: '{{ postman_latest_version }}'
     dest: '{{ postman_download_version_path }}'
+    mode: 'u=rw,go=r'
 
 - name: check for installed version file
   become: yes
@@ -91,6 +92,7 @@
       - '--strip-components=1'
     owner: root
     group: root
+    mode: 'go-w'
     creates: '{{ postman_install_dir }}/Postman'
 
 - name: write installed version file
@@ -98,6 +100,7 @@
   copy:
     content: '{{ postman_latest_version }}'
     dest: '{{ postman_installed_version_path }}'
+    mode: 'u=rw,go=r'
 
 - name: install Postman link
   become: yes
